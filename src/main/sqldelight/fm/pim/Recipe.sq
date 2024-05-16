@@ -1,0 +1,11 @@
+CREATE TABLE recipe (
+  id INTEGER PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL
+);
+
+INSERT INTO recipe (id, name)
+VALUES (15, 'Lekkere kippensoep');
+
+selectAll:
+SELECT *
+FROM recipe;
