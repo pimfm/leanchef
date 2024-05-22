@@ -1,36 +1,79 @@
 package fm.pim
 
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.compression.*
-import io.ktor.server.plugins.contentnegotiation.*
+import com.fraktalio.fmodel.domain.IDecider
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 
-fun main() {
-    embeddedServer(Netty, 8080, "0.0.0.0", module = Application::module).start(wait = true)
+class RecipeDecider : IDecider<CompleteRecipeStep, Kitchen, CookingEvent> {
+    override val decide = ::decideRecipeStepCompletion
+    override val evolve = ::evolveKitchenToCurrentCookingState
+    override val initialState = initialOrganisedAndCleanKitchen()
 }
 
-fun Application.module() {
-    configureSerialization()
-    configureHTTP()
-    configureRouting()
+fun decideRecipeStepCompletion(command: CompleteRecipeStep, state: Kitchen) = when (command.number) {
+    1 -> completeStep1()
+    2 -> completeStep2()
+    3 -> completeStep3()
+    4 -> completeStep4()
+    5 -> completeStep5()
+    6 -> completeStep6()
+    else -> emptyFlow()
 }
 
-fun Application.configureHTTP() {
-    install(Compression) {
-        gzip {
-            priority = 1.0
-        }
-        deflate {
-            priority = 10.0
-            minimumSize(1024) // condition
-        }
-    }
+fun evolveKitchenToCurrentCookingState(state: Kitchen, event: CookingEvent): Kitchen = when (event) {
+    is FishPattedDryEvent -> TODO()
+    HandsWashedEvent -> TODO()
+    is OvenPreheatedEvent -> TODO()
+    is VegetablesCutEvent -> TODO()
+
+    is Step1CompletedEvent -> TODO()
+    is Step2CompletedEvent -> TODO()
+    is Step3CompletedEvent -> TODO()
+    is Step4CompletedEvent -> TODO()
+    is Step5CompletedEvent -> TODO()
+    is Step6CompletedEvent -> TODO()
 }
 
-fun Application.configureSerialization() {
-    install(ContentNegotiation) {
-        json()
-    }
-}
+fun initialOrganisedAndCleanKitchen() = Kitchen(
+    ingredients = listOf(
+        Ingredient("Basa Fillets"),
+        Ingredient("Green Pepper"),
+        Ingredient("Mexican Style Spice Mix"),
+        Ingredient("Breadcrumbs"),
+        Ingredient("Mayonnaise"),
+        Ingredient("Medium Tomato"),
+        Ingredient("Coriander"),
+        Ingredient("Chipotle Paste"),
+        Ingredient("Plain Taco Tortillas"),
+        Ingredient("Soured Cream"),
+        Ingredient("Oil for the Breadcrumbs"),
+        Ingredient("Olive Oil for the Salsa")
+    ),
+    utensils = listOf(
+        Utensil("Paper towels"),
+        Utensil("Bowl"),
+        Utensil("Baking sheets"),
+        Utensil("Baking tray")
+    ),
+    oven = Oven(type = "Electric", status = "off"),
+)
+
+fun completeStep1() = flowOf(
+    OvenPreheatedEvent(temperature = 220),
+    FishPattedDryEvent(paperTowelsUsed = 2),
+    HandsWashedEvent,
+    VegetablesCutEvent(emptyList()),
+    Step1CompletedEvent
+)
+
+fun completeStep2() = flowOf(
+    Step2CompletedEvent
+)
+
+fun completeStep3() = flowOf(
+    Step3CompletedEvent
+)
+
+fun completeStep4() = flowOf<CookingEvent>()
+fun completeStep5() = flowOf<CookingEvent>()
+fun completeStep6() = flowOf<CookingEvent>()

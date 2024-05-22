@@ -21,6 +21,7 @@ application {
 }
 
 repositories {
+    google()
     mavenCentral()
 }
 
@@ -29,6 +30,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
+    implementation("io.ktor:ktor-server-cors-jvm")
     implementation("com.ucasoft.ktor:ktor-simple-cache:0.+")
     implementation("io.ktor:ktor-server-compression-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
@@ -40,12 +42,15 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
     testImplementation("org.testcontainers:postgresql:1.19.8")
+
+    implementation("com.fraktalio.fmodel:domain:3.5.0")
+    implementation("com.fraktalio.fmodel:application-vanilla:3.5.0")
 }
 
 sqldelight {
     databases {
         create("Database") {
-            packageName = "fm.pim"
+            packageName.set("fm.pim")
             dialect("app.cash.sqldelight:postgresql-dialect:2.0.2")
         }
     }

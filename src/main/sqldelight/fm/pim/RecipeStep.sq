@@ -3,6 +3,11 @@ CREATE TABLE recipe (
   name TEXT NOT NULL
 );
 
+CREATE TABLE step (
+  id INTEGER PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL
+);
+
 INSERT INTO recipe (id, name)
 VALUES (15, 'Lekkere kippensoep');
 
