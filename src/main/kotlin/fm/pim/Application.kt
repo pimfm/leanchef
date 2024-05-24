@@ -51,7 +51,7 @@ fun evolve(recipe: Recipe, event: CookingEvent): Recipe = when (event) {
     is Step5Completed -> recipe.copy(completedStep = 5)
 
     // Step 6
-    is Step6Completed -> recipe.copy(completedStep = 6)
+    is Step6Completed -> recipe.copy(completedStep = 6, usedIngredients = recipe.usedIngredients + "Soured Cream")
     else -> recipe
 }
 
