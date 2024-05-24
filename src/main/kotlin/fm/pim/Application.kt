@@ -35,15 +35,19 @@ fun evolve(recipe: Recipe, event: CookingEvent): Recipe = when (event) {
     is Step1Completed -> recipe.copy(completedStep = 1)
 
     // Step 2
+    is AddedToSmallBowl -> recipe.copy(usedIngredients = recipe.usedIngredients + listOf("Mexican Style Spice Mix", "Breadcrumbs", "Oil for the Breadcrumbs"))
     is Step2Completed -> recipe.copy(completedStep = 2)
+    is AddedToMediumBowl -> recipe.copy(usedIngredients = recipe.usedIngredients + "Mayonnaise")
 
     // Step 3
     is Step3Completed -> recipe.copy(completedStep = 3)
 
     // Step 4
+    is IngredientsMixed -> recipe.copy(usedIngredients = recipe.usedIngredients + listOf("Medium Tomato", "Coriander", "Olive Oil for the Salsa", "Chipotle Paste"))
     is Step4Completed -> recipe.copy(completedStep = 4)
 
     // Step 5
+    is TortillasAddedToMicrowave -> recipe.copy(usedIngredients = recipe.usedIngredients + listOf("Plain Taco Tortillas"))
     is Step5Completed -> recipe.copy(completedStep = 5)
 
     // Step 6
