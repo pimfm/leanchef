@@ -24,7 +24,7 @@ fun Application.configureRouting() {
                 .also { events -> store(events) }
                 .let  { events -> events.fold(recipe, ::evolve) }
 
-            call.respond(evolvedRecipe.usedIngredients)
+            call.respond(evolvedRecipe)
         }
 
         get("/events") {
