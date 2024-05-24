@@ -4,10 +4,10 @@ val kotlinVersion: String by project
 val logbackVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.9.24"
-    id("io.ktor.plugin") version "2.3.11"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24"
-    id("app.cash.sqldelight") version "2.0.2"
+    kotlin("jvm") version "2.0.0"
+    id("io.ktor.plugin") version "3.0.0-beta-1"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
 group = "fm.pim"
@@ -26,38 +26,30 @@ repositories {
 }
 
 dependencies {
-    implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    // Ktor
     implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation("io.ktor:ktor-server-cors-jvm")
-    implementation("com.ucasoft.ktor:ktor-simple-cache:0.+")
-    implementation("io.ktor:ktor-server-compression-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("io.ktor:ktor-server-config-yaml:2.3.11")
-    implementation("app.cash.sqldelight:jdbc-driver:2.0.2")
-    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("io.ktor:ktor-server-cors-jvm")
 
+    // Logging
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+
+    // Arrow
+    implementation("io.arrow-kt:arrow-optics:2.0.0-alpha.2")
+    ksp("io.arrow-kt:arrow-optics-ksp-plugin:2.0.0-alpha.2")
+
+    // Testing
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
     testImplementation("org.testcontainers:postgresql:1.19.8")
 
+    // FModel
     implementation("com.fraktalio.fmodel:domain:3.5.0")
     implementation("com.fraktalio.fmodel:application-vanilla:3.5.0")
 }
 
-sqldelight {
-    databases {
-        create("Database") {
-            packageName.set("fm.pim")
-            dialect("app.cash.sqldelight:postgresql-dialect:2.0.2")
-        }
-    }
-}
-
 tasks.compileKotlin {
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-receivers")
     }
 }
