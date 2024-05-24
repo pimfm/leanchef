@@ -5,7 +5,7 @@ package fm.pim
 import fm.pim.domain.CookingEvent
 import fm.pim.models.Kitchen
 import fm.pim.models.Recipe
-import io.ktor.http.*
+import fm.pim.models.generateReport
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -24,7 +24,7 @@ fun Application.configureRouting() {
                 .also { events -> store(events) }
                 .let  { events -> events.fold(recipe, ::evolve) }
 
-            call.respond(evolvedRecipe)
+            call.respond(evolvedRecipe.usedIngredients)
         }
 
         get("/events") {
@@ -43,7 +43,7 @@ fun Application.configureRouting() {
             call.respond(kitchen)
         }
 
-        get("report") {
+        get("/report") {
             call.respondText(generateReport())
         }
     }

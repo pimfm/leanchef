@@ -1,10 +1,7 @@
 package fm.pim
 
 import fm.pim.domain.*
-import fm.pim.models.Kitchen
-import fm.pim.models.Recipe
-import fm.pim.models.oven
-import fm.pim.models.temperature
+import fm.pim.models.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -17,7 +14,7 @@ fun decide(command: CompleteRecipeStep, recipe: Recipe): Flow<CookingEvent> {
 
     // Once validated, return new events as a result of command completion
     return when (command) {
-        is CompleteStep1 -> step1events(command.ovenTemperature)
+        is CompleteStep1 -> step1events(command.ovenTemperature, command.waterUsed)
         is CompleteStep2 -> step2events(command.saltAddedInGrams)
         is CompleteStep3 -> step3events(command.timeInOven)
         is CompleteStep4 -> step4events(command.waterUsedInMl)
@@ -32,7 +29,25 @@ fun decide(command: CompleteRecipeStep, recipe: Recipe): Flow<CookingEvent> {
  * Recipe
  */
 fun evolve(recipe: Recipe, event: CookingEvent): Recipe = when (event) {
+    // Step 1
+    is BataFishPattedDry -> recipe.copy(usedIngredients = recipe.usedIngredients + "Basa Fillets")
+    is VegetablesCut -> recipe.copy(usedIngredients = recipe.usedIngredients + "Green Pepper")
+    is Step1Completed -> recipe.copy(completedStep = 1)
 
+    // Step 2
+    is Step2Completed -> recipe.copy(completedStep = 2)
+
+    // Step 3
+    is Step3Completed -> recipe.copy(completedStep = 3)
+
+    // Step 4
+    is Step4Completed -> recipe.copy(completedStep = 4)
+
+    // Step 5
+    is Step5Completed -> recipe.copy(completedStep = 5)
+
+    // Step 6
+    is Step6Completed -> recipe.copy(completedStep = 6)
     else -> recipe
 }
 
@@ -41,6 +56,20 @@ fun evolve(recipe: Recipe, event: CookingEvent): Recipe = when (event) {
  * Kitchen
  */
 fun evolve(kitchen: Kitchen, event: CookingEvent): Kitchen = when (event) {
-    is OvenPreheated -> Kitchen.oven.temperature.modify(kitchen) { event.temperature }
-    else -> TODO()
+    // Step 1
+    is OvenPreheated            -> Kitchen.oven.modify(kitchen) { it.copy(temperature = event.temperature, state = "on") }
+    is HandsWashed              -> Kitchen.waterFaucet.waterUsedInMl.modify(kitchen) { it + event.waterUsed }
+    is EquipmentWashed          -> Kitchen.waterFaucet.waterUsedInMl.modify(kitchen) { it + event.waterUsed }
+    is BataFishPattedDry        -> Kitchen.garbageBin.filledPercentage.modify(kitchen) { it + 4 }
+    is CutOffVegetableDiscarded -> Kitchen.garbageBin.filledPercentage.modify(kitchen) { it + 15 }
+
+    // Step 2
+    is PlacedOnBakingTray -> Kitchen.oven.content.modify(kitchen) { "Basa fillets and sliced green peppers" }
+
+    // Step 6
+    is Step6Completed -> Kitchen.oven.modify(kitchen) { it.copy(state = "off", content = "", temperature = 176) }
+
+    else -> kitchen
 }
+
+// val kitchen = kitchen.waterFaucet.waterUsedInMl += 204
